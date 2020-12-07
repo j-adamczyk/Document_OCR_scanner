@@ -1,1 +1,1 @@
-# Document_OCR_scanner
+# Document OCR scanner
