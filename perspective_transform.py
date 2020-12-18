@@ -9,8 +9,8 @@ def perspective_transform(img: np.ndarray, input_points: list, output_shape: tup
             img (numpy.ndarray): Original image
             input_points (list): List of four points arranged anticlockwise starting top-left corner
             output_shape (tuple): Desired shape of transformed image (height, width), 
-        							if not passed, it gets eyeballed based on resolution
-        							and A4-like sheet proportions 
+        		if not passed, it gets eyeballed based on resolution
+        		and A4-like sheet proportions 
 
         Returns:
         	warped_img (numpy.ndarray): Transformed image
@@ -18,6 +18,7 @@ def perspective_transform(img: np.ndarray, input_points: list, output_shape: tup
 
 	dst = np.array(input_points)
 
+	#checking if input_points are correct 
 	if not dst.shape == (4,2):
 		raise ValueError(f"Shape of input_points expected to be (4,2), got {dst.shape} instead")
 
@@ -25,6 +26,7 @@ def perspective_transform(img: np.ndarray, input_points: list, output_shape: tup
 		print("Perspective_transform: suspicious arrangement of input_points", end = " - ")
 		print("expected anticlockwise starting top-left corner")
 
+	#eyeballing output_shape if not passed
 	if not output_shape:
 		from math import dist
 
@@ -38,6 +40,7 @@ def perspective_transform(img: np.ndarray, input_points: list, output_shape: tup
 
 	src = np.array([[0, 0], [0, output_shape[0]], [output_shape[1], output_shape[0]], [output_shape[1], 0]])
 
+	#transformation
 	tform = transform.ProjectiveTransform()
 	tform.estimate(src, dst)
 	warped_img = transform.warp(img, tform, output_shape=output_shape)
