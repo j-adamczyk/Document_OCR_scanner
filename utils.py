@@ -38,12 +38,13 @@ def get_image_corners(image: np.ndarray) -> list:
     return [(0, 0), (0, image.shape[0] - 1), (image.shape[1] - 1, image.shape[0] - 1), (image.shape[1] - 1, 0)]
 
 
-def show_image(image: np.ndarray):
+def show_image(image: np.ndarray, window_title="image"):
     """
     Shows image in a separate window.
 
     Parameters
     ----------
+    window_title
     image : numpy.ndarray
         Image to show.
     """
