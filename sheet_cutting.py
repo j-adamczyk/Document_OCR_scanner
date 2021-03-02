@@ -18,23 +18,6 @@ def gray_and_blur_image(src: np.ndarray):
     src_gray = cv.blur(src_gray, (3, 3))
     return src_gray
 
-
-# def grab_contours(contours: tuple) -> tuple:
-#     """
-#        Grabs contours using imutils library
-#        Parameters
-#        ----------
-#        contours : tuple
-#            tuple of contours found by opencv
-#        Returns
-#        -------
-#        tuple
-#         contours
-#        """
-#     import imutils
-#     return imutils.grab_contours(contours)
-
-
 def grab_contours(cnts):
     '''
     Utility method copied from https://github.com/jrosebr1/imutils
