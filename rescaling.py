@@ -1,9 +1,6 @@
-import matplotlib.pyplot as matplot
+import io
 import numpy as np
-import os
-from skimage import img_as_ubyte
-from skimage.color import rgb2gray
-import skimage.io as scikit
+from PIL import Image
 
 
 def rescale(image: np.ndarray) -> np.ndarray:
@@ -18,44 +15,20 @@ def rescale(image: np.ndarray) -> np.ndarray:
     Returns
     -------
     numpy.ndarray
-        rescaled image (to constant 300 DPI), as gray (more info below)
+        rescaled image (to constant 300 DPI)
 
     """
 
-    # name of temporary file
-    filename = "rescaled_img.jpg"
+    # saving image with 300 DPI to temporary file in RAM using BytesIO and PIL save function with DPI scaling
+    buffer = io.BytesIO()
+    pil_img = Image.fromarray(image)
+    pil_img.save(buffer, format="png", dpi=(300, 300))
 
-    # the only way to change DPI I've found is to save image using matplotlib.pyplot.imsave() function
-    # so, I'm saving with 300 DPI, then loading again and deleting temporary file
-    matplot.imsave(filename, image, dpi=300)
-    rescaled_img = scikit.imread(filename)
-    os.remove(filename)
+    # setting start of bytes stream
+    buffer.seek(0)
 
-    # converting to gray because saved tmp file has black text on yellow background
-    gray_img = rgb2gray(rescaled_img)
+    # getting rescaled image and changing format to np.ndarray
+    rescaled_img = Image.open(buffer)
+    reformatted_img = np.array(rescaled_img)
 
-    return gray_img
-
-
-def test_run(filename: str):
-    """
-    Function which loads image and calls rescaling function written above.
-    This function is not intented to use in Document OCR Scanner project,
-    it's just for local tests and can be removed. The right method to use is above.
-
-    Parameters
-    ----------
-    filename : string
-        name of file with photo to test
-
-    """
-
-    # reading image with scikit image function
-    img = scikit.imread(filename)
-
-    # rescaling process
-    rescaled_img = rescale(img)
-
-    # saving image to file with scikit image function
-    scikit.imsave(f"{filename.split('.')[0]}_rescaled.jpg", img_as_ubyte(rescaled_img))
-
+    return reformatted_img
