@@ -18,18 +18,21 @@ def gray_and_blur_image(src: np.ndarray):
     src_gray = cv.blur(src_gray, (3, 3))
     return src_gray
 
-def grab_contours(cnts):
-    '''
+
+def grab_contours(cnts) -> list:
+    """
     Utility method copied from https://github.com/jrosebr1/imutils
     Parameters
     ----------
     cnts
         contours tuple
     Returns
+    -------
+    list:
         the actual contours array
     -------
 
-    '''
+    """
     # if the length the contours tuple returned by cv2.findContours
     # is '2' then we are using either OpenCV v2.4, v4-beta, or
     # v4-official

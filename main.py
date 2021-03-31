@@ -1,14 +1,21 @@
-#python built-ins
+# python built-ins
 import argparse
 
-#project modules
+# project modules
 import utils
 from perspective_transform import perspective_transform
 from sheet_cutting import get_corners_of_sheet
 from text_align import align_text
 
 
-def get_parsed_args():
+def get_parsed_args() -> argparse.Namespace:
+    """
+        Function to get namespace of possible arguments
+    Returns
+    -------
+        argparse.Namespace
+            namespace with parsed args
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("image_filename")
     return parser.parse_args()
