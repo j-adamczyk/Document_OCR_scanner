@@ -20,13 +20,18 @@ def binarize(img: np.ndarray) -> np.ndarray:
     # converting to grayscale if needed
     if len(img.shape) == 3:
         img = rgb2gray(img)
+   
+    # estimating right block_size value
+    block_size = 1 +  2 * int((img.shape[0] + img.shape[1]) / 250)
+    block_size = min(block_size, 35)
+    block_size = max(block_size, 15)
 
-    # getting and applying the threshold
-    # block_size and offset values may not be ideal but they seem to work well
+    # getting theshold mask and applying it
     threshold = threshold_local(img,
-                         block_size=21, 
-                         offset=0.015, 
-                         method='gaussian')
+                         block_size = 21, 
+                         offset = 0.015, 
+                         method = 'gaussian')
+
     out = img > threshold
 
     return out
