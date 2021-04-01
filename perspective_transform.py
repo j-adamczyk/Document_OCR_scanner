@@ -1,11 +1,13 @@
-import numpy as np
-from skimage import data, transform
 import warnings
 
+import numpy as np
+from skimage import transform
+
+
 def perspective_transform(
-            img: np.ndarray, 
-            input_points: list, 
-            output_shape: tuple) -> np.ndarray:
+        img: np.ndarray,
+        input_points: list,
+        output_shape: tuple) -> np.ndarray:
     """
     Applies 4 point perspective transform to an image
     and returns it as a separate image.
@@ -34,9 +36,9 @@ def perspective_transform(
 
     # checking if input_points are in correct shape
     input_shape = np.array(input_points).shape
-    if not input_shape == (4,2):
+    if not input_shape == (4, 2):
         raise ValueError("Shape of input_points expected to be (4,2) " +
-                           f"got {input_shape} instead.") 
+                         f"got {input_shape} instead.")
 
     upper_left_src = (0, 0)
     lower_left_src = (0, output_shape[0])
@@ -49,18 +51,18 @@ def perspective_transform(
     upper_right_dst = input_points[3]
 
     # checking if input_points are arranged in a correct way
-    if not (upper_left_dst[1] < lower_left_dst[1] 
-            and lower_left_dst[0] < lower_right_dst[0] 
-            and lower_right_dst[1] > upper_right_dst[1] 
+    if not (upper_left_dst[1] < lower_left_dst[1]
+            and lower_left_dst[0] < lower_right_dst[0]
+            and lower_right_dst[1] > upper_right_dst[1]
             and upper_right_dst[0] > upper_left_dst[0]):
         warnings.warn("Suspicious arrangement of input_points," +
-                    "expected anticlockwise starting top-left corner.")
+                      "expected anticlockwise starting top-left corner.")
 
     # transformation coordinates 
     dst = np.array(input_points)
-    src = np.array([upper_left_src, 
-                    lower_left_src, 
-                    lower_right_src, 
+    src = np.array([upper_left_src,
+                    lower_left_src,
+                    lower_right_src,
                     upper_right_src])
 
     # transformation 

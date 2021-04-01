@@ -19,61 +19,86 @@ def gray_and_blur_image(src: np.ndarray):
     return src_gray
 
 
-def grab_contours(contours: tuple) -> tuple:
+def grab_contours(cnts) -> list:
     """
-       Grabs contours using imutils library
-       Parameters
-       ----------
-       contours : tuple
-           tuple of contours found by opencv
-       Returns
-       -------
-       tuple
-       contours
-       """
-    import imutils
-    return imutils.grab_contours(contours)
+    Utility method copied from https://github.com/jrosebr1/imutils
+    Parameters
+    ----------
+    cnts
+        contours tuple
+    Returns
+    -------
+    list:
+        the actual contours array
+    -------
+
+    """
+    # if the length the contours tuple returned by cv2.findContours
+    # is '2' then we are using either OpenCV v2.4, v4-beta, or
+    # v4-official
+    if len(cnts) == 2:
+        cnts = cnts[0]
+
+    # if the length of the contours tuple is '3' then we are using
+    # either OpenCV v3, v4-pre, or v4-alpha
+    elif len(cnts) == 3:
+        cnts = cnts[1]
+
+    # otherwise OpenCV has changed their cv2.findContours return
+    # signature yet again and I have no idea WTH is going on
+    else:
+        raise Exception(("Contours tuple must have length 2 or 3, "
+                         "otherwise OpenCV changed their cv2.findContours return "
+                         "signature yet again. Refer to OpenCV's documentation "
+                         "in that case"))
+
+    # return the actual contours array
+    return cnts
 
 
-def cut_sheet_from_image(src: np.ndarray) -> np.ndarray:
+def convert_clockwise_to_anticlockwise(points: np.ndarray) -> np.ndarray:
     """
-       Cuts sheet of paper from the photo
+    Parameters
+    ----------
+    points: numpy.ndarray
+        list of 4 points arranged clockwise
+    Returns
+    -------
+    numpy.ndarray
+        points arranged anti-clockwise
+    """
+    points[[1, 3]] = points[[3, 1]]
+    return points
+
+
+def get_corners_of_sheet(src: np.ndarray) -> np.ndarray:
+    """
+       Get corners of sheet of paper from the photo.
        Parameters
        ----------
        src : numpy.ndarray
            source photo BGR
        Returns
        -------
-       numpy.ndarray
-           cut sheet BGR
+       np.ndarray
+           2D array of corners of detected document arranged anit-clockwise
        """
     src_gray = gray_and_blur_image(src)
 
     THRESHOLD = 100  # initial threshold
     canny_output = cv.Canny(src_gray, THRESHOLD, THRESHOLD * 2)
 
+    # contours are arranged clockwise according to documentation
     contours = cv.findContours(canny_output, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    print(type(contours))
     contours = grab_contours(contours)
     min_rects = [cv.minAreaRect(c) for c in contours]
 
     def get_rect_size(rect: np.ndarray):
         # format enforced by opencv
         # RotatedRect:
-        # ((center_x,center_y,(width,heigth),angle)
+        # ((center_x, center_y), (width, height), angle)
         return rect[1][0] * rect[1][1]
 
     biggest_rect = max(min_rects, key=lambda e: get_rect_size(e))
-
     box = cv.boxPoints(biggest_rect)
-    box = np.intp(box)  # np.intp: Integer used for indexing (same as C ssize_t; normally either int32 or int64)
-
-    green_mask = np.zeros_like(src)
-    cv.drawContours(image=green_mask, contours=[box], contourIdx=0, color=[200, 200, 200], thickness=-1)
-
-    binary_mask = np.zeros(green_mask.shape, dtype=bool)
-    binary_mask[green_mask != 0] = True
-
-    out = src.copy()
-    out[binary_mask != True] = 0
-    return out
+    return convert_clockwise_to_anticlockwise(box)
