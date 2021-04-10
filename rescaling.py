@@ -21,7 +21,7 @@ def rescale(image: np.ndarray) -> np.ndarray:
 
     # saving image with 300 DPI to temporary file in RAM using BytesIO and PIL save function with DPI scaling
     buffer = io.BytesIO()
-    pil_img = Image.fromarray(image)
+    pil_img = Image.fromarray(np.uint8(image*255))
     pil_img.save(buffer, format="png", dpi=(300, 300))
 
     # setting start of bytes stream
