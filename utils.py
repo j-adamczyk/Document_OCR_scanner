@@ -2,6 +2,24 @@ import cv2 as cv
 import numpy as np
 
 
+def convert_to_float64(image: np.ndarray) -> np.ndarray:
+    """
+    Converts image with any different dtype to float64,
+    Mostly used as boolean -> float64 convertion
+
+    Parameters
+    ----------
+    image: np.ndarray
+        Image with another dtype
+
+    Returns
+    -------
+    np.ndarray
+        Image with dtype=float64
+    """
+    return np.float64(image)
+
+
 def read_image_from_file(filename: str) -> np.ndarray:
     """
     Reads image from file.
